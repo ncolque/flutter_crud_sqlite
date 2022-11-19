@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_crud_sqlite/model/diary.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter CRUD with Sqlite'),
     );
   }
 }
@@ -49,16 +50,32 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String diaries = '';
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    getDiaries();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  getDiaries() async {
+    List diaries = await Diary().getDiaries();
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      this.diaries = diaries.toString();
     });
+  }
+
+  void _incrementCounter() async {
+    Diary diary = Diary(type: 'Personal', enterCode: '123'); //create
+    /* Diary diary = Diary(id: 1, type: 'Escuela', enterCode: '1234'); //update */
+    int id = await diary.save();
+    print('Id diario = $id');
+    setState(() {
+      diaries;
+    });
+    /* Diary diary = Diary(id: 1, type: 'Personal', enterCode: '123'); //delete
+    await diary.remove(); */
   }
 
   @override
@@ -99,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              '$diaries',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
